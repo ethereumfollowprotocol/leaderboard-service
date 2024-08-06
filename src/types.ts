@@ -5,6 +5,9 @@ export type CountRow = {
   ens_name: string
   ens_avatar: string
   mutuals_rank: number
+  followers_rank: number
+  following_rank: number
+  blocks_rank: number
   mutuals: number
   followers: number
   following: number
@@ -16,6 +19,9 @@ export type LeaderBoardRow = {
   name: string | undefined
   avatar: string | undefined
   mutuals_rank: number
+  followers_rank: number
+  following_rank: number
+  blocks_rank: number
   mutuals: number
   following: number
   followers: number
