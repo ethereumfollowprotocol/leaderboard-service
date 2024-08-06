@@ -1,0 +1,102 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": {
+    "root": ".",
+    "enabled": true,
+    "clientKind": "git"
+  },
+  "files": {
+    "include": ["./**/*.ts", "./**/*.js", "./**/*.cjs", "./**/*.mjs", "./**/*.d.ts", "./**/*.json", "./**/*.jsonc"],
+    "ignoreUnknown": true,
+    "ignore": ["node_modules", "dist", "_"]
+  },
+  "organizeImports": {
+    "enabled": true
+  },
+  "formatter": {
+    "enabled": true,
+    "lineWidth": 120,
+    "indentWidth": 2,
+    "indentStyle": "space",
+    "formatWithErrors": true,
+    "include": ["./**/*.ts", "./**/*.js", "./**/*.cjs", "./**/*.mjs", "./**/*.d.ts", "./**/*.json", "./**/*.jsonc"],
+    "ignore": ["node_modules", "dist", "_"]
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "all": true,
+      "style": {
+        "useConst": "off",
+        "useBlockStatements": "off",
+        "useSelfClosingElements": "off",
+        "noUnusedTemplateLiteral": "off",
+        "useNamingConvention": "off",
+        "noParameterProperties": "off",
+        "noNamespace": "off"
+      },
+      "nursery": {
+        "all": true,
+        "useImportRestrictions": "off",
+        "noConsole": "off",
+        "noUndeclaredDependencies": "off",
+        "useImportExtensions": "off",
+        "useTopLevelRegex": "off"
+      },
+      "complexity": {
+        "all": true,
+        "noForEach": "off",
+        "useLiteralKeys": "off",
+        "noUselessEmptyExport": "off",
+        "noUselessTernary": "off"
+      },
+      "correctness": {
+        "all": true,
+        "noNodejsModules": "off",
+        "noUnusedVariables": "off",
+        "noUndeclaredVariables": "off",
+        "noUnusedImports": "off"
+      },
+      "performance": {
+        "all": true,
+        "noAccumulatingSpread": "off"
+      },
+      "suspicious": {
+        "all": true,
+        "noRedeclare": "off",
+        "noConsoleLog": "off",
+        "noExplicitAny": "off",
+        "noEmptyInterface": "off",
+        "useAwait": "off",
+        "noEmptyBlockStatements": "off"
+      }
+    }
+  },
+  "json": {
+    "parser": {
+      "allowComments": true
+    },
+    "formatter": {
+      "enabled": true,
+      "lineWidth": 120,
+      "indentWidth": 2
+    }
+  },
+  "javascript": {
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    },
+    "formatter": {
+      "enabled": true,
+      "lineWidth": 120,
+      "indentWidth": 2,
+      "indentStyle": "space",
+      "quoteStyle": "single",
+      "trailingCommas": "none",
+      "semicolons": "asNeeded",
+      "jsxQuoteStyle": "single",
+      "quoteProperties": "asNeeded",
+      "arrowParentheses": "asNeeded"
+    }
+  }
+}
