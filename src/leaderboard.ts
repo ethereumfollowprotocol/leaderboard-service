@@ -45,19 +45,19 @@ export async function analyze() {
       }
     })
     logger.log(`Updating ENS Cache: ${formatted.length} records...`)
-    const insertENSCache = await database.insertInto('ens_metadata')
-            .values(formatted)
-            .onConflict(oc => oc
-                .column('address')
-                .doUpdateSet(eb => ({
-                    name: eb.ref('excluded.name'),
-                    avatar: eb.ref('excluded.avatar')
-                }))    
-            )
-            .executeTakeFirst()
-    // if (insertENSCache.numInsertedOrUpdatedRows !== BigInt(formatted.length)) {
-    //   logger.error(`Failed to insert ens data ${JSON.stringify(formatted)}`)
-    // }
+    if(formatted.length > 0){
+        const insertENSCache = await database.insertInto('ens_metadata')
+        .values(formatted)
+        .onConflict(oc => oc
+            .column('address')
+            .doUpdateSet(eb => ({
+                name: eb.ref('excluded.name'),
+                avatar: eb.ref('excluded.avatar')
+            }))    
+        )
+        .executeTakeFirst()
+    }
+
     logger.log(`Fetching leaderboard counts...`)
     const reloaded = sql<CountRow>`SELECT * FROM public.view__join__efp_leaderboard`
     const reloadedResult = await reloaded.execute(database)
