@@ -14,7 +14,7 @@ async function beginLeaderboardAnalysis() {
       logger.info('Waiting...')
 
       await analyze()
-      await sleep(3600_000)
+      await sleep(env.SLEEP_INTERVAL)
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : error

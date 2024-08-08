@@ -1,5 +1,6 @@
 import { type Kysely, type QueryResult, sql } from 'kysely'
 import { database } from '#/database'
+import { env } from '#/env'
 import { logger } from '#/logger'
 import type { CountRow, ENSProfile, ENSProfileResponse, LeaderBoardRow } from '#/types'
 import { arrayToChunks } from '#/utilities'
@@ -22,7 +23,7 @@ export async function analyze() {
     logger.log(`Fetching ENS data in ${formattedBatches.length} chunks...`)
     const response = await Promise.all(
       formattedBatches.map(batch => {
-        return fetch(`https://ens.evm.workers.dev/bulk/u?${batch}`)
+        return fetch(`${env.ENS_API_URL}bulk/u?${batch}`)
       })
     )
 
