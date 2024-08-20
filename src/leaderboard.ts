@@ -5,8 +5,7 @@ import { logger } from '#/logger'
 import type { CountRow, ENSProfile, ENSProfileResponse, LeaderBoardRow } from '#/types'
 import { arrayToChunks } from '#/utilities'
 
-export async function analyze() {
-  let addresses: `0x${string}`[] = []
+export async function updateENSData() {
   try {
     logger.log(`Fetching Users...`)
     const query = sql<CountRow>`SELECT * FROM public.view__join__efp_leaderboard`
@@ -37,34 +36,45 @@ export async function analyze() {
     logger.log(`fetchedRecords ${fetchedRecords.length}`)
     logger.log(`filteredRecords ${filteredRecords.length}`)
 
-
     const formatted = filteredRecords.map(record => {
       return {
         name: record.name,
         address: record.address.toLowerCase(),
-        avatar: record.avatar
+        avatar:
+          record.avatar?.indexOf('http') === 0
+            ? record.avatar
+            : `https://metadata.ens.domains/mainnet/avatar/${record.name}`
       }
     })
     logger.log(`Updating ENS Cache: ${formatted.length} records...`)
-    if(formatted.length > 0){
-        const insertENSCache = await database.insertInto('ens_metadata')
+    if (formatted.length > 0) {
+      const insertENSCache = await database
+        .insertInto('ens_metadata')
         .values(formatted)
-        .onConflict(oc => oc
-            .column('address')
-            .doUpdateSet(eb => ({
-                name: eb.ref('excluded.name'),
-                avatar: eb.ref('excluded.avatar')
-            }))    
+        .onConflict(oc =>
+          oc.column('address').doUpdateSet(eb => ({
+            name: eb.ref('excluded.name'),
+            avatar: eb.ref('excluded.avatar')
+          }))
         )
         .executeTakeFirst()
     }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : error
+    logger.error('EXCEPTION', errorMessage)
+  }
+}
 
+export async function analyze() {
+  let addresses: `0x${string}`[] = []
+  try {
     logger.log(`Fetching leaderboard counts...`)
     const reloaded = sql<CountRow>`SELECT * FROM public.view__join__efp_leaderboard`
     const reloadedResult = await reloaded.execute(database)
-
+    const leaderboard: LeaderBoardRow[] = []
+    logger.log(`Building leaderboard for ${reloadedResult.rows.length} records...`)
+    let index = 0
     for (const row of reloadedResult.rows) {
-
       leaderboard.push({
         address: row.address,
         name: row.ens_name,
@@ -79,7 +89,6 @@ export async function analyze() {
         blocks: row.blocks
       })
       index++
-
     }
 
     logger.log(`Cleaning up Table...`)
@@ -97,5 +106,3 @@ export async function analyze() {
   }
   logger.info('DONE')
 }
-
-

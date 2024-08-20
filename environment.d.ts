@@ -4,6 +4,7 @@ interface EnvironmentVariables {
   readonly ENABLE_DATABASE_LOGGING: string
   readonly ENS_API_URL: string
   readonly SLEEP_INTERVAL: number
+  readonly SNITCH_ID: string
 }
 
 declare module 'bun' {
