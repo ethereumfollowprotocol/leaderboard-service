@@ -96,9 +96,13 @@ export async function analyze() {
     const clearTable = await truncate.execute(database)
 
     logger.log(`Inserting new leaderboard data...`)
-    const insert = await database.insertInto('efp_leaderboard').values(leaderboard).executeTakeFirst()
-    if (insert.numInsertedOrUpdatedRows !== BigInt(leaderboard.length)) {
-      logger.error(`Failed to insert leaderboard rows ${JSON.stringify(leaderboard)}`)
+    const batchSize = 5000
+    const batches = arrayToChunks(leaderboard, batchSize)
+    for (const batch of batches) {
+      const insert = await database.insertInto('efp_leaderboard').values(batch).executeTakeFirst()
+      if (insert.numInsertedOrUpdatedRows !== BigInt(batch.length)) {
+        logger.error(`Failed to insert leaderboard rows ${JSON.stringify(batch)}`)
+      }
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : error
