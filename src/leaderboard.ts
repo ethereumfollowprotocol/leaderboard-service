@@ -26,10 +26,15 @@ export async function updateENSData() {
       })
     )
 
-    const data = (await Promise.all(response.map(response => response.json()))) as {
-      response_length: number
-      response: ENSProfileResponse
-    }[]
+    const data = await Promise.all(
+        response.map(async (response) => {
+            await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for 1 second
+            return response.json();
+        })
+    ) as {
+        response_length: number;
+        response: ENSProfileResponse;
+    }[];
     logger.log(`Resolving ENS requests...`)
     const fetchedRecords = data.flatMap(datum => datum.response)
     const filteredRecords = fetchedRecords.filter(record => record.type === 'success')
