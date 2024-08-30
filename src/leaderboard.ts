@@ -26,15 +26,15 @@ export async function updateENSData() {
       })
     )
 
-    const data = await Promise.all(
-        response.map(async (response) => {
-            await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for 1 second
-            return response.json();
-        })
-    ) as {
-        response_length: number;
-        response: ENSProfileResponse;
-    }[];
+    const data = (await Promise.all(
+      response.map(async response => {
+        await new Promise(resolve => setTimeout(resolve, 1000)) // Wait for 1 second
+        return response.json()
+      })
+    )) as {
+      response_length: number
+      response: ENSProfileResponse
+    }[]
     logger.log(`Resolving ENS requests...`)
     const fetchedRecords = data.flatMap(datum => datum.response)
     const filteredRecords = fetchedRecords.filter(record => record.type === 'success')
@@ -46,7 +46,9 @@ export async function updateENSData() {
         name: record.name,
         address: record.address.toLowerCase(),
         avatar:
-          record.avatar?.indexOf('http') === 0
+          record.avatar?.indexOf('http') === 0 &&
+          record.avatar?.indexOf('https://ipfs') !== 0 &&
+          record.avatar?.indexOf('ipfs') !== 0
             ? record.avatar
             : `https://metadata.ens.domains/mainnet/avatar/${record.name}`
       }
