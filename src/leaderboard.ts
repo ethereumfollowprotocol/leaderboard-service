@@ -1,4 +1,5 @@
-import { type Kysely, type QueryResult, sql } from 'kysely'
+import { ens_normalize } from '@adraffy/ens-normalize'
+import { sql } from 'kysely'
 import { database } from '#/database'
 import { env } from '#/env'
 import { logger } from '#/logger'
@@ -42,16 +43,26 @@ export async function updateENSData() {
     logger.log(`filteredRecords ${filteredRecords.length}`)
 
     const formatted = filteredRecords.map(record => {
-      return {
-        name: record.name,
-        address: record.address.toLowerCase(),
-        avatar:
-          record.avatar?.indexOf('http') === 0 &&
-          record.avatar?.indexOf('https://ipfs') !== 0 &&
-          record.avatar?.indexOf('ipfs') !== 0
-            ? record.avatar
-            : `https://metadata.ens.domains/mainnet/avatar/${record.name}`
-      }
+        let name;
+        try {
+            name = ens_normalize(record.name)
+        } catch (error) {
+            return {
+                name: '',
+                address: record.address.toLowerCase(),
+                avatar: ''
+            }
+        }
+        return {
+            name: name,
+            address: record.address.toLowerCase(),
+            avatar:
+            record.avatar?.indexOf('http') === 0 &&
+            record.avatar?.indexOf('https://ipfs') !== 0 &&
+            record.avatar?.indexOf('ipfs') !== 0
+                ? record.avatar
+                : `https://metadata.ens.domains/mainnet/avatar/${record.name}`
+        }
     })
     logger.log(`Updating ENS Cache: ${formatted.length} records...`)
     if (formatted.length > 0) {

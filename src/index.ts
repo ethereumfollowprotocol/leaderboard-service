@@ -20,7 +20,6 @@ async function beginLeaderboardAnalysis() {
   try {
     logger.info(`Analyzing Follows...`)
     let cycleTime = 0
-    let cycleLimit = 12 * 60 * 60 * 1000
     for (;;) {
       logger.info('Waiting...')
 
@@ -28,7 +27,7 @@ async function beginLeaderboardAnalysis() {
       await analyze()
       await sleep(env.SLEEP_INTERVAL)
       cycleTime += env.SLEEP_INTERVAL
-      if (cycleTime > cycleLimit) {
+      if (cycleTime > 0) {
         logger.info(`Refreshing ENS Data...`)
         cycleTime = 0
         await updateENSData()
