@@ -27,7 +27,7 @@ export async function updateENSData() {
       })
     )
     logger.log(`Resolving ENS requests...`)
-    console.log('response', response)
+
     const data = (await Promise.all(
       response.map(async response => {
         await new Promise(resolve => setTimeout(resolve, 1000)) // Wait for 1 second
@@ -60,6 +60,7 @@ export async function updateENSData() {
       return {
         name: name,
         address: record.address.toLowerCase(),
+        records: record.records,
         avatar:
           record.avatar?.indexOf('http') === 0 &&
           record.avatar?.indexOf('https://ipfs') !== 0 &&
@@ -76,7 +77,8 @@ export async function updateENSData() {
         .onConflict(oc =>
           oc.column('address').doUpdateSet(eb => ({
             name: eb.ref('excluded.name'),
-            avatar: eb.ref('excluded.avatar')
+            avatar: eb.ref('excluded.avatar'),
+            records: eb.ref('excluded.records')
           }))
         )
         .executeTakeFirst()

@@ -15,8 +15,6 @@ export async function sleep(ms: number): Promise<void> {
 }
 
 export function arrayToChunks<T>(array: T[], chunkSize: number): T[][] {
-  // Muted by user
-  // biome-ignore lint/nursery/noEvolvingTypes: <explanation>
   const chunks = []
   for (let index = 0; index < array.length; index += chunkSize) {
     chunks.push(array.slice(index, index + chunkSize))

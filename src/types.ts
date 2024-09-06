@@ -32,6 +32,7 @@ export type ENSProfile = {
   name: string
   address: Address
   avatar?: string
+  records?: string
   updated_at?: string
 }
 
