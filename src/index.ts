@@ -27,7 +27,7 @@ async function beginLeaderboardAnalysis() {
       await analyze()
       await sleep(env.SLEEP_INTERVAL)
       cycleTime += env.SLEEP_INTERVAL
-      if (cycleTime > 0) {
+      if (cycleTime > env.ENS_REFRESH_INTERVAL) {
         logger.info(`Refreshing ENS Data...`)
         cycleTime = 0
         await updateENSData()
