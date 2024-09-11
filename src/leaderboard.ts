@@ -107,10 +107,12 @@ export async function analyze() {
         followers_rank: row.followers_rank,
         following_rank: row.following_rank,
         blocks_rank: row.blocks_rank,
+        top8_rank: row.top8_rank,
         mutuals: row.mutuals,
         following: row.following,
         followers: row.followers,
-        blocks: row.blocks
+        blocks: row.blocks,
+        top8: row.top8
       })
       index++
     }

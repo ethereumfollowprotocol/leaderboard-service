@@ -8,10 +8,12 @@ export type CountRow = {
   followers_rank: number
   following_rank: number
   blocks_rank: number
+  top8_rank: number
   mutuals: number
   followers: number
   following: number
   blocks: number
+  top8: number
 }
 
 export type LeaderBoardRow = {
@@ -22,10 +24,12 @@ export type LeaderBoardRow = {
   followers_rank: number
   following_rank: number
   blocks_rank: number
+  top8_rank: number
   mutuals: number
   following: number
   followers: number
   blocks: number
+  top8: number
 }
 
 export type ENSProfile = {
