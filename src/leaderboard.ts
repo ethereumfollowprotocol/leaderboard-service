@@ -26,43 +26,48 @@ export async function updateENSData() {
         return fetch(`${env.ENS_API_URL}bulk/u?${batch}`)
       })
     )
+    logger.log(`Resolving ENS requests...`)
 
     const data = (await Promise.all(
       response.map(async response => {
         await new Promise(resolve => setTimeout(resolve, 1000)) // Wait for 1 second
-        return response.json()
+        if (response.ok) {
+          return response.json()
+        }
       })
     )) as {
       response_length: number
       response: ENSProfileResponse
     }[]
-    logger.log(`Resolving ENS requests...`)
-    const fetchedRecords = data.flatMap(datum => datum.response)
+    logger.log(`Formatting ENS requests...`)
+    const validResponses = data.filter(datum => datum)
+    const fetchedRecords = validResponses.flatMap(datum => datum.response)
     const filteredRecords = fetchedRecords.filter(record => record.type === 'success')
     logger.log(`fetchedRecords ${fetchedRecords.length}`)
     logger.log(`filteredRecords ${filteredRecords.length}`)
 
     const formatted = filteredRecords.map(record => {
-        let name;
-        try {
-            name = ens_normalize(record.name)
-        } catch (error) {
-            return {
-                name: '',
-                address: record.address.toLowerCase(),
-                avatar: ''
-            }
-        }
+      let name: string
+      try {
+        name = ens_normalize(record.name)
+      } catch (error) {
         return {
-            name: name,
-            address: record.address.toLowerCase(),
-            avatar:
-            record.avatar?.indexOf('http') === 0 &&
-            record.avatar?.indexOf('https://ipfs') !== 0 &&
-            record.avatar?.indexOf('ipfs') !== 0
-                ? record.avatar
-                : `https://metadata.ens.domains/mainnet/avatar/${record.name}`
+          name: '',
+          address: record.address.toLowerCase(),
+          avatar: ''
         }
+      }
+      return {
+        name: name,
+        address: record.address.toLowerCase(),
+        records: record.records,
+        avatar:
+          record.avatar?.indexOf('http') === 0 &&
+          record.avatar?.indexOf('https://ipfs') !== 0 &&
+          record.avatar?.indexOf('ipfs') !== 0
+            ? record.avatar
+            : `https://metadata.ens.domains/mainnet/avatar/${record.name}`
+      }
     })
     logger.log(`Updating ENS Cache: ${formatted.length} records...`)
     if (formatted.length > 0) {
@@ -72,7 +77,8 @@ export async function updateENSData() {
         .onConflict(oc =>
           oc.column('address').doUpdateSet(eb => ({
             name: eb.ref('excluded.name'),
-            avatar: eb.ref('excluded.avatar')
+            avatar: eb.ref('excluded.avatar'),
+            records: eb.ref('excluded.records')
           }))
         )
         .executeTakeFirst()

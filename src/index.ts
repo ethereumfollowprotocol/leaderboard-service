@@ -9,7 +9,7 @@ import { sleep } from '#/utilities'
 async function sendHeartbeat() {
   try {
     const response = await fetch(`https://nosnch.in/${env.SNITCH_ID}`)
-    logger.info(`Heartbeat registered`)
+    logger.info("Heartbeat registered")
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : error
     logger.error('EXCEPTION', errorMessage)
@@ -18,7 +18,7 @@ async function sendHeartbeat() {
 
 async function beginLeaderboardAnalysis() {
   try {
-    logger.info(`Analyzing Follows...`)
+    logger.info("Analyzing Follows...")
     let cycleTime = 0
     for (;;) {
       logger.info('Waiting...')
@@ -26,9 +26,9 @@ async function beginLeaderboardAnalysis() {
       await sendHeartbeat()
       await analyze()
       await sleep(env.SLEEP_INTERVAL)
-      cycleTime += env.SLEEP_INTERVAL
-      if (cycleTime > 0) {
-        logger.info(`Refreshing ENS Data...`)
+      cycleTime += (env.SLEEP_INTERVAL *1)
+      if (cycleTime >= env.ENS_REFRESH_INTERVAL) {
+        logger.info("Refreshing ENS Data...")
         cycleTime = 0
         await updateENSData()
       }
@@ -71,7 +71,7 @@ async function main() {
     // wait for db to be up
     for (;;) {
       try {
-        logger.log(`dbmate status`, `🗄️`)
+        logger.log("dbmate status", "🗄️")
         await runDbmateCommand('status')
         break
       } catch (error) {
@@ -80,7 +80,7 @@ async function main() {
       }
     }
 
-    logger.box(`EFP Leaderboard Analysis`, '🔍')
+    logger.box("EFP Leaderboard Analysis", '🔍')
 
     await beginLeaderboardAnalysis()
   } catch (error) {
